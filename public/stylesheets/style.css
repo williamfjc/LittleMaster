@@ -1,13 +1,22 @@
+*{
+    font-family: "Microsoft YaHei"
+}
+body{
+    padding-top: 50px;
+}
 #header {
-    background: #00B7FF;
+    background: #56CDB8;
     height: 50px;
+    position: fixed;
+    top: 0;
+    width: 100%;
 }
 #footer{
     position: fixed;
     bottom: 0;
     height: 50px;
     width: 100%;
-    background: #ffff00;
+    background: #E4E4E4;
 }
 .footer{
     height: 50px;
@@ -15,11 +24,58 @@
     width: 50%;
     text-align: center;
     font-size: 20px;
-    color: #555;
-    background: #ccc;
+    color: #939393;
     display: inline-block;
+    font-weight: bold;
 }
 .current{
     color: #fff !important;
-    background: #0f0 !important;
+    background: #56CDB8 !important;
+}
+
+.header{
+    float: left;
+    display: block;
+    text-align: center;
+    font-size: 20px;
+    color: #FFFFFF;
+    line-height: 50px;
+    box-sizing: border-box;
+}
+
+#header-back{
+    padding-left: 10px;
+    text-align: left;
+    width: 25%;
+}
+
+#back{
+    display: inline-block;
+    width: 14px;
+    vertical-align: middle;
+}
+
+#header-title{
+    width: 50%;
+    font-weight: bold;
+}
+
+#header-save{
+    width: 25%;
+    font-size: 16px;
+    padding-right: 2px;
+    text-align: right;
+}
+
+#save{
+    display: inline-block;
+    width: 18px;
+    vertical-align: middle;
+    padding-left: 5px;
+}
+#collection{
+    display: inline-block;
+    width: 26px;
+    margin: 4px 10px 0 0;
+    vertical-align: middle;
 }

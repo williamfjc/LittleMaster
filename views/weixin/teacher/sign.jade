@@ -1,0 +1,40 @@
+//
+   Created by michel_feng on 15/10/23.
+
+extends  ./parent.jade
+
+block header-back
+    img#back(src="/images/left-arrow.png")
+block header-title
+    | 已报名兼职
+
+block content
+    #job_list
+        if jobList
+            for job in jobList
+                .job(id="#{job.id}")
+                    .job_type
+                        | #{job.position}
+                    .job_content
+                        .job_time
+                            | 工作日期: #{job.startTime}-#{job.endTime}
+                        .job_title #{job.title}
+                        .job_others
+                            | #{job.address}
+                            | &nbsp;
+                            //| #{job.gender}
+                            case job.gender
+                                when 0
+                                    | 男性
+                                when 1
+                                    | 女性
+                                when 2
+                                    | 性别不限
+                            | &nbsp;
+                            | #{job.settlement}
+                            .job_price #{job.sallary}#{job.sallaryType}
+        else
+            div.no-result
+                | 尚未报名兼职
+
+block script

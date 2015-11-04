@@ -1,0 +1,203 @@
+// 我的简历
+   Created by michel_feng on 15/10/23.
+
+extends ../layout
+
+block header-back
+    img#back(src="/images/left-arrow.png")
+block header-title
+    | 我的简历
+block header-save
+    | 保存
+    img#save(src="/images/save.png")
+
+block content
+    input(id="teacherId",type="hidden", value="#{profile.id}")
+    input(id="userId",type="hidden", value="#{profile.userId}")
+    input(id="openId",type="hidden", value="#{profile.openId}")
+    #first_line.bottom-line(onclick="goToHead()")
+        if profile.headImg
+            - profile.headImg = profile.headImg.substring(profile.headImg.indexOf('/'))
+            img#headImg(src="#{profile.headImg}" alt="" value="1")
+        else
+            img(src="/images/default-profile.png" alt="")
+        span.small-text 上传头像
+    #second_line(onclick="goToBind()")
+        span.show-text(style="padding-left:0") 联系方式:
+        span.input-text #{profile.mobile}
+        span.small-text 修改绑定
+    #basic_info
+        div.line-header
+            span.vertical-line
+            | 基本信息
+        div.indent.bottom-line
+            span.show-text 姓名
+            input#name.no-border(type="text", placeholder="", name="name", value="#{profile.name}")
+        div.indent.bottom-line
+            span.show-text 性别
+            if (profile.gender === 0)
+                input.input-text(type="radio", checked="checked", value="0", name="gender", id="male")
+            else
+                input.input-text(type="radio", value="0", name="gender", id="male")
+            label(for="male") 男
+            | &nbsp;&nbsp;
+            if (profile.gender === 0)
+                input.input-text(type="radio", value="1", name="gender", id="female")
+            else
+                input.input-text(type="radio", value="1", checked="checked", name="gender", id="female")
+            label(for="female") 女
+
+        div.indent
+            span.show-text 生日
+            input#birthday(type="text", placeholder="", name="birthday", value="#{profile.birthday}").no-border
+    #teacher_diploma
+        div.line-header
+            span.vertical-line
+            | 拥有教师资格证才能报名兼职
+        div.indent(onclick="goToDiploma('teacher')")
+            span.line-title.input-text 教师资格证
+            span.line-right
+                span.count
+                if diplomaTeacher && diplomaTeacher.kindCount
+                    | #{diplomaTeacher.kindCount}
+                else
+                    | 0
+                |  个
+                img(src="/images/right-arrow.png" alt=">")
+    #education_info
+        div.line-header
+            span.vertical-line
+            | 学历信息（填写完成才能报名兼职）
+        div.indent.bottom-line(onclick="goToCollege()")
+            span
+                span.show-text 大学
+                span#collegeName.input-text #{profile.college}
+            span.line-right
+                img(src="/images/right-arrow.png" alt=">")
+        div.indent.bottom-line
+            span.show-text 专业
+            input#major.no-border(type="text", placeholder="", name="major", value="#{profile.majar}")
+        div.indent.bottom-line(onclick="goToEducation()")
+            span
+                span.show-text 学历
+                span#education.input-text #{profile.education}
+            span.line-right
+                img(src="/images/right-arrow.png" alt=">")
+        div.indent
+            span.show-text 时间
+            input#entryYear.no-border(type="text", name="entryYear", placeholder="", min="1900", max="2999" value="#{profile.entryYear}")
+    #other_diploma
+        div.line-header
+            span.vertical-line
+            | 相关证书（选填）
+        div.indent(onclick="goToDiploma('other')")
+            span.line-title.input-text 专业类
+            span.line-right
+                span.count
+                if diplomaOther && diplomaOther.kindCount
+                    | #{diplomaOther.kindCount}
+                else
+                    | 0
+                |  个
+                img(src="/images/right-arrow.png" alt=">")
+    #experience
+        div.line-header
+            span.vertical-line
+            | 工作经历（至少填写一项）
+        div.indent.bottom-line(onclick="goToExperience('social')")
+            span.line-title.input-text 社会工作经验
+            span.line-right
+                span.count
+                if experienceSocial && experienceSocial["kindCount"]
+                    | #{experienceSocial["kindCount"]}
+                else
+                    | 0
+                |  个
+                img(src="/images/right-arrow.png" alt=">")
+        div.indent.bottom-line(onclick="goToExperience('parttime')")
+            span.line-title.input-text 兼职经验
+            span.line-right
+                span.count
+                if experienceParttime && experienceParttime["kindCount"]
+                    | #{experienceParttime["kindCount"]}
+                else
+                    | 0
+                |  个
+                img(src="/images/right-arrow.png" alt=">")
+        div.indent.bottom-line(onclick="goToExperience('school')")
+            span.line-title.input-text 校园工作经验
+            span.line-right
+                span.count
+                if experienceSchool && experienceSchool["kindCount"]
+                    | #{experienceSchool["kindCount"]}
+                else
+                    | 0
+                |  个
+                img(src="/images/right-arrow.png" alt=">")
+block footer
+
+block script
+    script.
+        $(function () {
+            if (sessionStorage.length) {
+                if (sessionStorage.getItem('college')) {
+                    $('#collegeName').html(sessionStorage.getItem('college'));
+                }
+                if (sessionStorage.getItem('education')) {
+                    $('#education').html(sessionStorage.getItem('education'));
+                }
+            }
+
+            $('#personal_center').addClass('current');
+
+            $('#header-save').click(function () {
+                var teacherInfo = {
+                    id: $('#teacherId').val(),
+                    name: $('#name').val(),
+                    gender: $(':checked').val(),
+                    birthday: $('#birthday').val(),
+                    college: $('#collegeName').text(),
+                    major: $('#major').val(),
+                    education: $('#education').text(),
+                    entryYear: $('#entryYear').val()
+                };
+                $.ajax({
+                    url: '/weixin/teacher/profile/save',
+                    data: {teacher: JSON.stringify(teacherInfo)},
+                    dataType: 'json',
+                    type: 'post',
+                    success: function (result) {
+                        if (result.success) {
+                            sessionStorage.clear();
+                        }
+                        alert(result.message);
+                    }
+                })
+            });
+        });
+        function goToHead() {
+            if ($('#headImg').attr('value')) {
+                sessionStorage.setItem('headImg', $('#headImg').attr('src'));
+                window.location.href = "upload";
+            }
+        }
+
+        function goToBind() {
+            window.location.href = "bind";
+        }
+
+        function goToCollege() {
+            window.location.href = "college";
+        }
+
+        function goToEducation() {
+            window.location.href = "education";
+        }
+
+        function goToExperience(type) {
+            window.location.href = "experience/" + type;
+        }
+
+        function goToDiploma(type) {
+            window.location.href = "diploma/" + type;
+        }

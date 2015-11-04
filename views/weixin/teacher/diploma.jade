@@ -1,0 +1,58 @@
+//
+   Created by michel_feng on 15/10/24.
+extends ./parent.jade
+block header-title
+    case title
+        when 'teacher'
+            | 教师资格证书
+        when 'other'
+            | 专业类证书
+block content
+    div.top-add
+        #btnAdd
+            img(src="/images/add.png", alt="")
+            | 添加证书
+    if diplomaList
+        each diploma in diplomaList
+            div(id="#{diploma.id}")
+                div.container_add_title
+                    div
+                        span.experience_title #{diploma.name}
+                        - var time = (diploma.achieveTime.getYear() + 1900) + '年' + (diploma.achieveTime.getMonth()+1) + '月' + diploma.achieveTime.getDate() + '日';
+                        span.experience_time 拿证时间：#{time}
+                    img.delete(src="/images/delete.png", alt="", value="#{diploma.id}")
+                div.container_add_content
+                    div.diploma_img
+                        - diploma.imgPath = diploma.imgPath.substring(diploma.imgPath.indexOf('/'))
+                        img(src="#{diploma.imgPath}")
+
+
+block script
+    script.
+        $(function () {
+            $(".container_add_content").last().css("padding-bottom", "0px");
+
+            $("#btnAdd").click(function () {
+                window.location.href = window.location.href + '/add';
+            });
+
+            $(".delete").each(function () {
+                $(this).click(function () {
+                    var id = $(this).attr("value");
+                    $.ajax({
+                        url: "/weixin/teacher/diploma/delete",
+                        type: "post",
+                        dataType: "json",
+                        data: {diplomaId: id},
+                        success: function (result) {
+                            if (result.success) {
+                                alert(result.message);
+                                    if (result.success) {
+                                        $(document.getElementById(id)).hide();
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+        });

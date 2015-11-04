@@ -1,0 +1,79 @@
+//
+   Created by michel_feng on 15/10/27.
+
+extends ./parent.jade
+
+block style
+    script(src='/plugins/kalendae/kalendae.standalone.js')
+    link(rel='stylesheet' href='/plugins/kalendae/kalendae.css')
+
+block header-title
+    | 添加经历
+
+block content
+    input(id="teacherId",type="hidden", value="#{user.id}")
+    input(id="userId",type="hidden", value="#{user.userId}")
+    input(id="openId",type="hidden", value="#{user.openId}")
+    input(id="kind",type="hidden", value="#{kind}")
+    div.add-line
+        span.show-text 工作名称
+        input#name(type="text").name
+    div.add-line
+        span.show-text 在职时间
+        input#startTime(type="text", data-kal='format:"YYYY-MM-DD"').date.auto-kal
+        | &nbsp;&nbsp;-&nbsp;&nbsp;
+        input#endTime(type="text", data-kal='format:"YYYY-MM-DD"').date.auto-kal
+    div.textarea
+        span.show-text 工作描述（至少15字）
+        textarea#description(placeholder="简要描述工作内容")
+
+    #saveExp.button
+        img(src="/images/correct.png")
+        span 保存经历
+
+block script
+    script.
+        $(function () {
+            $('#saveExp').click(function () {
+                var name = $('#name').val();
+                var startTime = $('#startTime').val();
+                var endTime = $('#endTime').val();
+                var description = $('#description').val();
+                var kind = $('#kind').val();
+
+                if (!name) {
+                    alert('工作名称不能为空！');
+                    $('#name').focus();
+                    return;
+                }
+                if (endTime < startTime) {
+                    alert('在职结束时间应大于开始时间！');
+                    $('#endTime').focus();
+                    return;
+                }
+                if (description.length < 15) {
+                    alert('工作描述至少15个字！');
+                    $('#description').focus();
+                    return;
+                }
+                $.ajax({
+                    url: '/weixin/teacher/experience/save',
+                    data: {
+                        kind: kind,
+                        name: name,
+                        startTime: startTime,
+                        endTime: endTime,
+                        description: description
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (result) {
+                        alert(result.message);
+                        if (result.success) {
+                            window.location.href = '/weixin/teacher/experience/' + result.entity
+                        }
+                    }
+                });
+            });
+
+        });
